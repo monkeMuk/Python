@@ -1,8 +1,138 @@
 import turtle
+import os
+import math
+
+#Set up the screen
+wn = turtle.Screen()
+wn.bgcolor("black")
+wn.title("Space Invaders")
+
+#Draw border
+border_pen = turtle.Turtle()
+border_pen.speed(0)
+border_pen.color("white")
+border_pen.penup()
+border_pen.setposition(-300,-300)
+border_pen.pendown()
+border_pen.pensize(3)
+for side in range(4):
+	border_pen.fd(600)
+	border_pen.lt(90)
+border_pen.hideturtle()	
+
+#Create the player turtle
+player = turtle.Turtle()
+player.color("green")
+player.shape("triangle")
+player.penup()
+player.speed(0)
+player.setposition(0,-250)
+player.setheading(90)
+
+#Create the enemy
+enemy = turtle.Turtle()
+enemy.color("red")
+enemy.shape("circle")
+enemy.penup()
+enemy.speed(0)
+enemy.setposition(0, 200)
+enemyspeed = 2
+
+#Create the player's bullet
+bullet = turtle.Turtle()
+bullet.color("yellow")
+bullet.shape("triangle")
+bullet.penup()
+bullet.speed(0)
+bullet.setheading(90)
+bullet.shapesize(0.5, 0.5)
+bullet.hideturtle()
+bulletspeed = 20
+
+#Define bullet state
+#ready - ready to fire
+#fire - bullet is firing
+bulletstate = "ready"
 
 
-w = turtle.Screen()
-w.title("Snake")
-w.bgcolor("black")
-w.setup(width = 600, height = 600)
-w.tracer(0) #turns off screen updates
+#Move the player left and right
+def move_left():
+    x = player.xcor()
+    if x < -275:
+        player.setx(x)
+    else:
+        player.setx(x-20)
+	
+def move_right():
+    x = player.xcor()
+    if x > 275:
+        player.setx(x)
+    else:
+        player.setx(x+20)
+	
+def fire_bullet():
+	#Declare bulletstate as a global if it needs changed
+	global bulletstate
+	if bulletstate == "ready":
+		bulletstate = "fire"
+		#Move the bullet to the just above the player
+		x = player.xcor()
+		y = player.ycor() + 10
+		bullet.setposition(x, y)
+		bullet.showturtle()
+
+def isCollision(t1, t2):
+    if t1.distance(t2) < 20:
+        return True
+    else:
+        return False
+#Create keyboard bindings
+wn.listen()
+wn.onkeypress(move_left, "Left")
+wn.onkeypress(move_right, "Right")
+wn.onkeypress(fire_bullet, "space")
+
+#Main game loop
+while True:
+	x = enemy.xcor()
+	enemy.setx(x + enemyspeed)
+
+	#Move the enemy back and down
+	if enemy.xcor() > 280:
+		y = enemy.ycor()
+		y -= 40
+		enemyspeed *= -1
+		enemy.sety(y)
+
+	if enemy.xcor() < -280:
+		y = enemy.ycor()
+		y -= 40
+		enemyspeed *= -1
+		enemy.sety(y)
+		
+	#Move the bullet
+	if bulletstate == "fire":
+		y = bullet.ycor()
+        bullet.sety(y+2)
+	
+	#Check to see if the bullet has gone to the top
+	if bullet.ycor() > 275:
+		bullet.hideturtle()
+		bulletstate = "ready"
+
+	#Check for a collision between the bullet and the enemy
+	if isCollision(bullet, enemy):
+		#Reset the bullet
+		bullet.hideturtle()
+		bulletstate = "ready"
+		bullet.setposition(0, -400)
+		#Reset the enemy
+		enemy.setposition(-200, 250)
+		
+	if isCollision(player, enemy):
+		player.hideturtle()
+		enemy.hideturtle()
+		print ("Game Over")
+		break
+
+wn.mainloop()
