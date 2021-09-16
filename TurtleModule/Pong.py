@@ -6,6 +6,7 @@ from random import choice, randint
 window = turtle.Screen()
 window.title("Classic Pong")
 window.bgcolor("black")
+window.bgpic("v.gif")
 window.setup(width = 800,height = 600)
 window.tracer(0)    #Stops the window from updating
 

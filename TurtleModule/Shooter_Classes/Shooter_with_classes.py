@@ -8,6 +8,7 @@ w = turtle.Screen()
 w.bgcolor("black")
 w.bgpic("v.gif")
 w.title("Classic Shooter with Classes")
+w.tracer(0)
 
 #   Border creation
 class Border(turtle.Turtle):
